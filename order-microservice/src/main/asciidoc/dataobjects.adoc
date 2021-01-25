@@ -1,0 +1,41 @@
+= Cheatsheets
+
+[[Order]]
+== Order
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[id]]`id`|`Number (Integer)`|-
+|[[personIdentificationNumber]]`personIdentificationNumber`|`String`|-
+|[[ticketNumbers]]`ticketNumbers`|`Array of Number (Integer)`|-
+|===
+
+[[OrderDto]]
+== OrderDto
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[personIdentificationNumber]]`personIdentificationNumber`|`String`|-
+|[[tickets]]`tickets`|`Array of Number (Integer)`|-
+|===
+
+[[TicketDto]]
+== TicketDto
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[date]]`date`|`String`|-
+|[[price]]`price`|`String`|-
+|[[quantity]]`quantity`|`Number (int)`|-
+|[[title]]`title`|`String`|-
+|===
+

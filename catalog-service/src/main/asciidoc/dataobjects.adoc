@@ -1,0 +1,54 @@
+= Cheatsheets
+
+[[ReservationTicketDto]]
+== ReservationTicketDto
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[quantity]]`quantity`|`Number (int)`|-
+|[[title]]`title`|`String`|-
+|===
+
+[[ReservationTicketDtoResult]]
+== ReservationTicketDtoResult
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[ticketNumbers]]`ticketNumbers`|`Array of Number (Integer)`|-
+|===
+
+[[Ticket]]
+== Ticket
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[date]]`date`|`String`|-
+|[[id]]`id`|`Number (int)`|-
+|[[price]]`price`|`String`|-
+|[[reserved]]`reserved`|`Boolean`|-
+|[[title]]`title`|`String`|-
+|===
+
+[[TicketDto]]
+== TicketDto
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[date]]`date`|`String`|-
+|[[price]]`price`|`String`|-
+|[[quantity]]`quantity`|`Number (int)`|-
+|[[title]]`title`|`String`|-
+|===
+

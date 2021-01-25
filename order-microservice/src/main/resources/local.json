@@ -1,0 +1,10 @@
+{
+  "order.http.address": "0.0.0.0",
+  "order.http.port": 8090,
+  "api.name": "order",
+  "url": "jdbc:postgresql://localhost:5432/orderdbvertx",
+  "user": "postgres",
+  "password": "postgres",
+  "driver-class-name": "org.postgresql.Driver",
+  "max_pool_size": 30
+}

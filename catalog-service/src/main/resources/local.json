@@ -1,0 +1,10 @@
+{
+  "ticket.http.address": "0.0.0.0",
+  "ticket.http.port": 8081,
+  "api.name": "ticket",
+  "url": "jdbc:postgresql://localhost:5432/catalogdbvertx",
+  "user": "postgres",
+  "password": "postgres",
+  "driver-class-name": "org.postgresql.Driver",
+  "max_pool_size": 30
+}
