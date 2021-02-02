@@ -22,12 +22,13 @@ public class Order {
 
   public Order(JsonObject json) {
     OrderConverter.fromJson(json, this);
-    if (json.getValue("ticketNumbers") instanceof String) {
-      this.ticketNumbers = new JsonArray(json.getString("ticketNumbers"))
+    if (json.getValue("ticket_numbers") instanceof String) {
+      this.ticketNumbers = new JsonArray(json.getString("ticket_numbers"))
         .stream()
         .map(e -> (Integer) e)
         .collect(Collectors.toList());
     }
+    this.personIdentificationNumber = json.getString("person_identification_number");
   }
 
   public JsonObject toJson() {

@@ -32,13 +32,13 @@ public interface TicketService {
   TicketService saveMultiplesSameTickets(TicketDto ticketDto, Handler<AsyncResult<Void>> resultHandler);
 
   @Fluent
-  TicketService checkAvailability(String title,Handler<AsyncResult<Boolean>> resultHandler);
+  TicketService checkAvailability(String title, Integer quantity,Handler<AsyncResult<Boolean>> resultHandler);
 
   @Fluent
   TicketService getAll(Handler<AsyncResult<List<Ticket>>> resultHandler);
 
   @Fluent
-  TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<Void>> resultHandler);
+  TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<ReservationTicketDtoResult>> resultHandler);
 
 
 }

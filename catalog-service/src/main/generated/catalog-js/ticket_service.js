@@ -20,6 +20,7 @@ var utils = require('vertx-js/util/utils');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JTicketService = Java.type('pl.dmcs.catalog.TicketService');
+var ReservationTicketDtoResult = Java.type('pl.dmcs.catalog.dto.ReservationTicketDtoResult');
 var TicketDto = Java.type('pl.dmcs.catalog.dto.TicketDto');
 var ReservationTicketDto = Java.type('pl.dmcs.catalog.dto.ReservationTicketDto');
 var Ticket = Java.type('pl.dmcs.catalog.Ticket');
@@ -119,13 +120,14 @@ var TicketService = function(j_val) {
 
    @public
    @param title {string} 
+   @param quantity {number} 
    @param resultHandler {function} 
    @return {TicketService}
    */
-  this.checkAvailability = function(title, resultHandler) {
+  this.checkAvailability = function(title, quantity, resultHandler) {
     var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-      j_ticketService["checkAvailability(java.lang.String,io.vertx.core.Handler)"](title, function(ar) {
+    if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] ==='number' && typeof __args[2] === 'function') {
+      j_ticketService["checkAvailability(java.lang.String,java.lang.Integer,io.vertx.core.Handler)"](title, utils.convParamInteger(quantity), function(ar) {
       if (ar.succeeded()) {
         resultHandler(ar.result(), null);
       } else {
@@ -168,7 +170,7 @@ var TicketService = function(j_val) {
     if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'function') {
       j_ticketService["reserveTickets(pl.dmcs.catalog.dto.ReservationTicketDto,io.vertx.core.Handler)"](reservationTicketDto != null ? new ReservationTicketDto(new JsonObject(Java.asJSONCompatible(reservationTicketDto))) : null, function(ar) {
       if (ar.succeeded()) {
-        resultHandler(null, null);
+        resultHandler(utils.convReturnDataObject(ar.result()), null);
       } else {
         resultHandler(null, ar.cause());
       }

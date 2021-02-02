@@ -33,6 +33,7 @@ import io.vertx.serviceproxy.ProxyHelper;
 import io.vertx.serviceproxy.ServiceException;
 import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
 import java.util.List;
+import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
 import pl.dmcs.catalog.dto.TicketDto;
 import pl.dmcs.catalog.TicketService;
 import io.vertx.core.AsyncResult;
@@ -141,13 +142,14 @@ public class TicketServiceVertxEBProxy implements TicketService {
     return this;
   }
 
-  public TicketService checkAvailability(String title, Handler<AsyncResult<Boolean>> resultHandler) {
+  public TicketService checkAvailability(String title, Integer quantity, Handler<AsyncResult<Boolean>> resultHandler) {
     if (closed) {
       resultHandler.handle(Future.failedFuture(new IllegalStateException("Proxy is closed")));
       return this;
     }
     JsonObject _json = new JsonObject();
     _json.put("title", title);
+    _json.put("quantity", quantity);
     DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
     _deliveryOptions.addHeader("action", "checkAvailability");
     _vertx.eventBus().<Boolean>send(_address, _json, _deliveryOptions, res -> {
@@ -178,7 +180,7 @@ public class TicketServiceVertxEBProxy implements TicketService {
     return this;
   }
 
-  public TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<Void>> resultHandler) {
+  public TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<ReservationTicketDtoResult>> resultHandler) {
     if (closed) {
       resultHandler.handle(Future.failedFuture(new IllegalStateException("Proxy is closed")));
       return this;
@@ -187,12 +189,12 @@ public class TicketServiceVertxEBProxy implements TicketService {
     _json.put("reservationTicketDto", reservationTicketDto == null ? null : reservationTicketDto.toJson());
     DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
     _deliveryOptions.addHeader("action", "reserveTickets");
-    _vertx.eventBus().<Void>send(_address, _json, _deliveryOptions, res -> {
+    _vertx.eventBus().<JsonObject>send(_address, _json, _deliveryOptions, res -> {
       if (res.failed()) {
         resultHandler.handle(Future.failedFuture(res.cause()));
       } else {
-        resultHandler.handle(Future.succeededFuture(res.result().body()));
-      }
+        resultHandler.handle(Future.succeededFuture(res.result().body() == null ? null : new ReservationTicketDtoResult(res.result().body())));
+                      }
     });
     return this;
   }

@@ -119,16 +119,17 @@
 
      @public
      @param title {string} 
+     @param quantity {number} 
      @param resultHandler {function} 
      @return {TicketService}
      */
-    this.checkAvailability = function(title, resultHandler) {
+    this.checkAvailability = function(title, quantity, resultHandler) {
       var __args = arguments;
-      if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
+      if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] ==='number' && typeof __args[2] === 'function') {
         if (closed) {
           throw new Error('Proxy is closed');
         }
-        j_eb.send(j_address, {"title":__args[0]}, {"action":"checkAvailability"}, function(err, result) { __args[1](err, result &&result.body); });
+        j_eb.send(j_address, {"title":__args[0], "quantity":__args[1]}, {"action":"checkAvailability"}, function(err, result) { __args[2](err, result &&result.body); });
         return that;
       } else throw new TypeError('function invoked with invalid arguments');
     };

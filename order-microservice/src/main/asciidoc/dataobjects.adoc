@@ -22,7 +22,18 @@
 |===
 ^|Name | Type ^| Description
 |[[personIdentificationNumber]]`personIdentificationNumber`|`String`|-
-|[[tickets]]`tickets`|`Array of Number (Integer)`|-
+|[[ticketDto]]`ticketDto`|`link:dataobjects.html#TicketDto[TicketDto]`|-
+|===
+
+[[ReservationTicketDtoResult]]
+== ReservationTicketDtoResult
+
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[ticketNumbers]]`ticketNumbers`|`Array of Number (Integer)`|-
 |===
 
 [[TicketDto]]

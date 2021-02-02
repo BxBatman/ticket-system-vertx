@@ -30,13 +30,8 @@ public class OrderDtoConverter {
     if (json.getValue("personIdentificationNumber") instanceof String) {
       obj.setPersonIdentificationNumber((String)json.getValue("personIdentificationNumber"));
     }
-    if (json.getValue("tickets") instanceof JsonArray) {
-      java.util.ArrayList<java.lang.Integer> list = new java.util.ArrayList<>();
-      json.getJsonArray("tickets").forEach( item -> {
-        if (item instanceof Number)
-          list.add(((Number)item).intValue());
-      });
-      obj.setTickets(list);
+    if (json.getValue("ticketDto") instanceof JsonObject) {
+      obj.setTicketDto(new pl.dmcs.order.dto.TicketDto((JsonObject)json.getValue("ticketDto")));
     }
   }
 
@@ -44,10 +39,8 @@ public class OrderDtoConverter {
     if (obj.getPersonIdentificationNumber() != null) {
       json.put("personIdentificationNumber", obj.getPersonIdentificationNumber());
     }
-    if (obj.getTickets() != null) {
-      JsonArray array = new JsonArray();
-      obj.getTickets().forEach(item -> array.add(item));
-      json.put("tickets", array);
+    if (obj.getTicketDto() != null) {
+      json.put("ticketDto", obj.getTicketDto().toJson());
     }
   }
 }

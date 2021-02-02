@@ -7,7 +7,7 @@ import java.util.List;
 
 @DataObject(generateConverter = true)
 public class OrderDto {
-    private List<Integer> tickets;
+    private TicketDto ticketDto;
     private String personIdentificationNumber;
 
     public OrderDto() {
@@ -24,12 +24,12 @@ public class OrderDto {
     }
 
 
-    public List<Integer> getTickets() {
-        return tickets;
+    public TicketDto getTicketDto() {
+        return ticketDto;
     }
 
-    public void setTickets(List<Integer> tickets) {
-        this.tickets = tickets;
+    public void setTicketDto(TicketDto ticketDto) {
+        this.ticketDto = ticketDto;
     }
 
     public String getPersonIdentificationNumber() {

@@ -19,9 +19,9 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
   private static final String API_SAVE = "/ticket";
   private static final String API_GET = "/ticket/:id";
   private static final String API_MULTIPLE_SAVE="/ticket/multiple";
-  private static final String API_AVAILABILITY_CHECK="/ticket/availability/:title";
+  private static final String API_AVAILABILITY_CHECK="/ticket/availability/:title/:quantity";
   private static final String API_GET_ALL="/ticket/all/list";
-  private static final String API_RESERVE="/ticket/check";
+  private static final String API_RESERVE="/ticket/reserve";
 
   public RestTicketAPIVerticle(TicketService ticketService) {
     this.ticketService = ticketService;
@@ -64,7 +64,8 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
 
   private void apiAvailabilityCheck(RoutingContext context) {
     String title = context.request().getParam("title");
-    ticketService.checkAvailability(title,resultHandlerNonEmpty(context));
+    Integer quantity = Integer.valueOf(context.request().getParam("quantity"));
+    ticketService.checkAvailability(title,quantity,resultHandlerNonEmpty(context));
   }
 
   private void apiGetAll(RoutingContext context) {
@@ -73,7 +74,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
 
   private void apiCheckAndReserveTickets(RoutingContext context) {
     ReservationTicketDto reservationTicketDto = new ReservationTicketDto(context.getBodyAsJson());
-    ticketService.reserveTickets(reservationTicketDto,resultVoidHandler(context,204));
+    ticketService.reserveTickets(reservationTicketDto,resultHandlerNonEmpty(context));
   }
 
 }

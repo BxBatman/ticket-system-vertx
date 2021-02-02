@@ -40,6 +40,7 @@ import io.vertx.serviceproxy.ProxyHandler;
 import io.vertx.serviceproxy.ServiceException;
 import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
 import java.util.List;
+import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
 import pl.dmcs.catalog.dto.TicketDto;
 import pl.dmcs.catalog.TicketService;
 import io.vertx.core.AsyncResult;
@@ -151,7 +152,7 @@ public class TicketServiceVertxProxyHandler extends ProxyHandler {
           break;
         }
         case "checkAvailability": {
-          service.checkAvailability((java.lang.String)json.getValue("title"), createHandler(msg));
+          service.checkAvailability((java.lang.String)json.getValue("title"), json.getValue("quantity") == null ? null : (json.getLong("quantity").intValue()), createHandler(msg));
           break;
         }
         case "getAll": {
@@ -169,7 +170,17 @@ public class TicketServiceVertxProxyHandler extends ProxyHandler {
           break;
         }
         case "reserveTickets": {
-          service.reserveTickets(json.getJsonObject("reservationTicketDto") == null ? null : new pl.dmcs.catalog.dto.ReservationTicketDto(json.getJsonObject("reservationTicketDto")), createHandler(msg));
+          service.reserveTickets(json.getJsonObject("reservationTicketDto") == null ? null : new pl.dmcs.catalog.dto.ReservationTicketDto(json.getJsonObject("reservationTicketDto")), res -> {
+            if (res.failed()) {
+              if (res.cause() instanceof ServiceException) {
+                msg.reply(res.cause());
+              } else {
+                msg.reply(new ServiceException(-1, res.cause().getMessage()));
+              }
+            } else {
+              msg.reply(res.result() == null ? null : res.result().toJson());
+            }
+         });
           break;
         }
         default: {

@@ -1,5 +1,7 @@
 package pl.dmcs.catalog.impl;
 
+import io.vertx.core.Future;
+import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
 import pl.dmcs.common.service.JdbcRepositoryWrapper;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -60,7 +62,6 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
     Integer quantity = ticketDto.getQuantity();
 
 
-    //todo check id autogenerate
     for (int i=0; i<quantity; i++) {
       JsonArray params = new JsonArray()
               .add(ticketDto.getTitle())
@@ -74,10 +75,10 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
   }
 
   @Override
-  public TicketService checkAvailability(String title, Handler<AsyncResult<Boolean>> resultHandler) {
+  public TicketService checkAvailability(String title, Integer quantity, Handler<AsyncResult<Boolean>> resultHandler) {
     this.retrieveAll(FETCH_ALL_STATEMENT)
             .map(rawList -> rawList.stream()
-                    .map(Ticket::new).count() > 0
+                    .map(Ticket::new).count() >= quantity
             )
             .setHandler(resultHandler);
     return this;
@@ -95,10 +96,13 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
   }
 
   @Override
-  public TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<Void>> resultHandler) {
+  public TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<ReservationTicketDtoResult>> resultHandler) {
     JsonArray params = new JsonArray()
             .add(reservationTicketDto.getTitle());
 
+    ReservationTicketDtoResult reservationTicketDtoResult = new ReservationTicketDtoResult();
+
+    List<Integer> ticketIds = new ArrayList<>();
     List<Ticket> tickets = new ArrayList<>();
 
     retrieveMany(params, FETCH_BY_TITLE_STATEMENT)
@@ -109,19 +113,23 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
       if (ar.succeeded()) {
         List<Ticket> result = ar.result();
         tickets.addAll(result);
-
+        int i=0;
 
         for (Ticket ticket : tickets) {
-          if (!ticket.isReserved()) {
+          if (!ticket.isReserved() && i<reservationTicketDto.getQuantity()) {
             JsonArray parameters = new JsonArray()
                     .add(true)
                     .add(ticket.getId());
-
-            this.executeNoResult(parameters, UPDATE_STATEMENT, resultHandler);
-            break;
+            executeNoResult(parameters, UPDATE_STATEMENT,r->{});
+            ticketIds.add(ticket.getId());
+            i++;
           }
         }
+        reservationTicketDtoResult.setTicketNumbers(ticketIds);
+        resultHandler.handle(Future.succeededFuture(reservationTicketDtoResult));
 
+      } else {
+        ar.cause().printStackTrace();
       }
     });
 

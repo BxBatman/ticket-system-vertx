@@ -20,6 +20,7 @@ import java.util.Map;
 import rx.Observable;
 import rx.Single;
 import java.util.List;
+import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
 import pl.dmcs.catalog.dto.TicketDto;
 import io.vertx.core.AsyncResult;
 import pl.dmcs.catalog.dto.ReservationTicketDto;
@@ -89,14 +90,14 @@ public class TicketService {
     }));
   }
 
-  public TicketService checkAvailability(String title, Handler<AsyncResult<Boolean>> resultHandler) { 
-    delegate.checkAvailability(title, resultHandler);
+  public TicketService checkAvailability(String title, Integer quantity, Handler<AsyncResult<Boolean>> resultHandler) { 
+    delegate.checkAvailability(title, quantity, resultHandler);
     return this;
   }
 
-  public Single<Boolean> rxCheckAvailability(String title) { 
+  public Single<Boolean> rxCheckAvailability(String title, Integer quantity) { 
     return Single.create(new io.vertx.rx.java.SingleOnSubscribeAdapter<>(fut -> {
-      checkAvailability(title, fut);
+      checkAvailability(title, quantity, fut);
     }));
   }
 
@@ -111,12 +112,12 @@ public class TicketService {
     }));
   }
 
-  public TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<Void>> resultHandler) { 
+  public TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<ReservationTicketDtoResult>> resultHandler) { 
     delegate.reserveTickets(reservationTicketDto, resultHandler);
     return this;
   }
 
-  public Single<Void> rxReserveTickets(ReservationTicketDto reservationTicketDto) { 
+  public Single<ReservationTicketDtoResult> rxReserveTickets(ReservationTicketDto reservationTicketDto) { 
     return Single.create(new io.vertx.rx.java.SingleOnSubscribeAdapter<>(fut -> {
       reserveTickets(reservationTicketDto, fut);
     }));
