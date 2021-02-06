@@ -43,8 +43,6 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
     router.get(API_GET).handler(this::apiGetOrder);
-//    router.post(API_SAVE).handler(this::apiSaveOrder);
-//    router.get(API_GET_TICKET).handler(this::apiGetTicket);
     router.post(MAKE_ORDER).handler(this::makeOrder);
 
     String host = config().getString("order.http.address", "0.0.0.0");
@@ -65,21 +63,6 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
     Order order = new Order(context.getBodyAsJson());
     service.save(order,resultVoidHandler(context,201));
   }
-
-//  private void apiGetTicket(RoutingContext context) {
-//    HttpServerResponse response = context.response();
-//    Integer id = Integer.valueOf(context.request().getParam("id"));
-//    WebClient client = WebClient.create(vertx);
-//    client.get(8081,"localhost","/ticket/" + id)
-//            .send(ar-> {
-//              if (ar.succeeded()) {
-//                HttpResponse<Buffer> resp = ar.result();
-//                response.setStatusCode(200).end(resp.body());
-//              } else {
-//                ar.cause().printStackTrace();
-//              }
-//            });
-//  }
 
   private void makeOrder(RoutingContext routingContext) {
     HttpServerResponse response = routingContext.response();

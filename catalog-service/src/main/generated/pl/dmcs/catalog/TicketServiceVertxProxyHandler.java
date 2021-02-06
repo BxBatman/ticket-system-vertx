@@ -183,6 +183,20 @@ public class TicketServiceVertxProxyHandler extends ProxyHandler {
          });
           break;
         }
+        case "getSpecificTickets": {
+          service.getSpecificTickets(json.getJsonArray("ticketIds").stream().map(o -> ((Number)o).intValue()).collect(Collectors.toList()), res -> {
+            if (res.failed()) {
+              if (res.cause() instanceof ServiceException) {
+                msg.reply(res.cause());
+              } else {
+                msg.reply(new ServiceException(-1, res.cause().getMessage()));
+              }
+            } else {
+              msg.reply(new JsonArray(res.result().stream().map(Ticket::toJson).collect(Collectors.toList())));
+            }
+         });
+          break;
+        }
         default: {
           throw new IllegalStateException("Invalid action: " + action);
         }

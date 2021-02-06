@@ -123,6 +123,17 @@ public class TicketService {
     }));
   }
 
+  public TicketService getSpecificTickets(List<Integer> ticketIds, Handler<AsyncResult<List<Ticket>>> resultHandler) { 
+    delegate.getSpecificTickets(ticketIds, resultHandler);
+    return this;
+  }
+
+  public Single<List<Ticket>> rxGetSpecificTickets(List<Integer> ticketIds) { 
+    return Single.create(new io.vertx.rx.java.SingleOnSubscribeAdapter<>(fut -> {
+      getSpecificTickets(ticketIds, fut);
+    }));
+  }
+
 
   public static TicketService newInstance(pl.dmcs.catalog.TicketService arg) {
     return arg != null ? new TicketService(arg) : null;

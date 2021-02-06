@@ -15,6 +15,7 @@ public class Ticket {
   public Ticket() {
   }
 
+
   public Ticket(JsonObject json) {
     TicketConverter.fromJson(json, this);
   }

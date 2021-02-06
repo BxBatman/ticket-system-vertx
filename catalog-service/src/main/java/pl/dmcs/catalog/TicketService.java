@@ -40,5 +40,8 @@ public interface TicketService {
   @Fluent
   TicketService reserveTickets(ReservationTicketDto reservationTicketDto, Handler<AsyncResult<ReservationTicketDtoResult>> resultHandler);
 
+  @Fluent
+  TicketService getSpecificTickets(List<Integer> ticketIds,Handler<AsyncResult<List<Ticket>>> resultHandler);
+
 
 }

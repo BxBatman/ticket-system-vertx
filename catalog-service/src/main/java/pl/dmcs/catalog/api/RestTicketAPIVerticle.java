@@ -2,6 +2,7 @@ package pl.dmcs.catalog.api;
 
 import pl.dmcs.catalog.Ticket;
 import pl.dmcs.catalog.TicketService;
+import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
 import pl.dmcs.common.RestAPIVerticle;
 import io.vertx.core.Future;
 import io.vertx.ext.web.Router;
@@ -22,6 +23,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
   private static final String API_AVAILABILITY_CHECK="/ticket/availability/:title/:quantity";
   private static final String API_GET_ALL="/ticket/all/list";
   private static final String API_RESERVE="/ticket/reserve";
+  private static final String API_GET_SPECIFIC_TICKETS="/ticket/specific/all";
 
   public RestTicketAPIVerticle(TicketService ticketService) {
     this.ticketService = ticketService;
@@ -38,6 +40,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
     router.get(API_AVAILABILITY_CHECK).handler(this::apiAvailabilityCheck);
     router.get(API_GET_ALL).handler(this::apiGetAll);
     router.post(API_RESERVE).handler(this::apiCheckAndReserveTickets);
+    router.post(API_GET_SPECIFIC_TICKETS).handler(this::apiGetSpecificTickets);
 
     String host = config().getString("ticket.http.address", "0.0.0.0");
     int port = config().getInteger("ticket.http.port", 8081);
@@ -75,6 +78,11 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
   private void apiCheckAndReserveTickets(RoutingContext context) {
     ReservationTicketDto reservationTicketDto = new ReservationTicketDto(context.getBodyAsJson());
     ticketService.reserveTickets(reservationTicketDto,resultHandlerNonEmpty(context));
+  }
+
+  private void apiGetSpecificTickets(RoutingContext context) {
+    ReservationTicketDtoResult reservationTicketDtoResult = new ReservationTicketDtoResult(context.getBodyAsJson());
+    ticketService.getSpecificTickets(reservationTicketDtoResult.getTicketNumbers(),resultHandlerNonEmpty(context));
   }
 
 }

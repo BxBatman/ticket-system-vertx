@@ -1,11 +1,8 @@
 package pl.dmcs.catalog.impl;
 
-import io.vertx.core.Future;
+import io.vertx.core.*;
 import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
 import pl.dmcs.common.service.JdbcRepositoryWrapper;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -17,6 +14,8 @@ import pl.dmcs.catalog.dto.TicketDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements TicketService {
@@ -138,6 +137,46 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
   }
 
 
+  @Override
+  public TicketService getSpecificTickets(List<Integer> ticketIds ,Handler<AsyncResult<List<Ticket>>> resultHandler) {
+
+    List<Ticket> tickets = new ArrayList<>();
+    List<Future> registrationFutures = new ArrayList<>(ticketIds.size());
+
+
+    for (Integer id : ticketIds) {
+      Future<Ticket> future = Future.future();
+      registrationFutures.add(future);
+      getTicket(id, future.completer());
+    }
+    CompositeFuture.all(registrationFutures).setHandler(ar -> {
+      if (ar.succeeded())  {
+        for (int i=0 ;i < ticketIds.size();i++) {
+          Ticket ticket = ar.result().result().resultAt(i);
+          tickets.add(ticket);
+        }
+      }
+        resultHandler.handle(Future.succeededFuture(tickets));
+    });
+
+    return this;
+  }
+
+
+
+  private void getTicket(int id,Handler<AsyncResult<Ticket>> resultHandler) {
+    retrieveOne(id, FETCH_BY_ID_STATEMENT)
+            .map(option -> option.map(Ticket::new).orElse(null))
+            .setHandler(ar ->{
+              if (ar.succeeded()) {
+                resultHandler.handle(Future.succeededFuture(ar.result()));
+              } else  {
+                ar.cause().printStackTrace();
+              }
+            });
+  }
+
+
 
 
   private static final String CREATE_STATEMENT = "CREATE TABLE IF NOT EXISTS `tickets` (\n" +
@@ -152,4 +191,5 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
   private static final String FETCH_BY_TITLE_STATEMENT = "SELECT * FROM tickets WHERE title = ?";
   private static final String FETCH_ALL_STATEMENT = "SELECT * FROM tickets";
   private static final String UPDATE_STATEMENT = "UPDATE tickets SET reserved = ? WHERE id = ?";
+  private static final String FETCH_BY_ID_STATEMENT = "SELECT * FROM tickets WHERE id = ?";
 }
