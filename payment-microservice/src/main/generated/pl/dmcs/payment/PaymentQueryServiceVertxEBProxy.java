@@ -14,9 +14,8 @@
 * under the License.
 */
 
-package io.vertx.blueprint.microservice.payment;
+package pl.dmcs.payment;
 
-import io.vertx.blueprint.microservice.payment.PaymentQueryService;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.Future;
@@ -29,10 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.function.Function;
-import io.vertx.serviceproxy.ProxyHelper;
+
 import io.vertx.serviceproxy.ServiceException;
 import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
-import io.vertx.blueprint.microservice.payment.Payment;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 

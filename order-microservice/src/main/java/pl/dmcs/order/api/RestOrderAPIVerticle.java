@@ -69,7 +69,6 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
     OrderDto orderDto = new OrderDto(routingContext.getBodyAsJson());
     TicketDto ticketDto = orderDto.getTicketDto();
 
-    Future<HttpResponse<Buffer>> responseFuture = Future.future();
       WebClient client = WebClient.create(vertx);
       client.get(8081, "localhost", "/ticket/availability/" + ticketDto.getTitle() + "/" + ticketDto.getQuantity())
               .send(ar -> {

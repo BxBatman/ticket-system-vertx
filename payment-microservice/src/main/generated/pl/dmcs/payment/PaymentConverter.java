@@ -14,15 +14,14 @@
  * under the License.
  */
 
-package io.vertx.blueprint.microservice.payment;
+package pl.dmcs.payment;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.json.JsonArray;
 
 /**
- * Converter for {@link io.vertx.blueprint.microservice.payment.Payment}.
+ * Converter for {@link Payment}.
  *
- * NOTE: This class has been automatically generated from the {@link io.vertx.blueprint.microservice.payment.Payment} original class using Vert.x codegen.
+ * NOTE: This class has been automatically generated from the {@link Payment} original class using Vert.x codegen.
  */
 public class PaymentConverter {
 

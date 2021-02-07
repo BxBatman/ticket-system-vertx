@@ -42,7 +42,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
     router.post(API_RESERVE).handler(this::apiCheckAndReserveTickets);
     router.post(API_GET_SPECIFIC_TICKETS).handler(this::apiGetSpecificTickets);
 
-    String host = config().getString("ticket.http.address", "0.0.0.0");
+    String host = config().getString("ticket.http.address", "localhost");
     int port = config().getInteger("ticket.http.port", 8081);
 
     createHttpServer(router, host, port)

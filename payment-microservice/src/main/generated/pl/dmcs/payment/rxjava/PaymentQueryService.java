@@ -14,12 +14,10 @@
  * under the License.
  */
 
-package io.vertx.blueprint.microservice.payment.rxjava;
+package pl.dmcs.payment.rxjava;
 
-import java.util.Map;
-import rx.Observable;
 import rx.Single;
-import io.vertx.blueprint.microservice.payment.Payment;
+import pl.dmcs.payment.Payment;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
@@ -30,24 +28,24 @@ import io.vertx.core.Handler;
  * </p>
  *
  * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.blueprint.microservice.payment.PaymentQueryService original} non RX-ified interface using Vert.x codegen.
+ * NOTE: This class has been automatically generated from the {@link pl.dmcs.payment.PaymentQueryService original} non RX-ified interface using Vert.x codegen.
  */
 
-@io.vertx.lang.rxjava.RxGen(io.vertx.blueprint.microservice.payment.PaymentQueryService.class)
+@io.vertx.lang.rxjava.RxGen(pl.dmcs.payment.PaymentQueryService.class)
 public class PaymentQueryService {
 
   public static final io.vertx.lang.rxjava.TypeArg<PaymentQueryService> __TYPE_ARG = new io.vertx.lang.rxjava.TypeArg<>(
-    obj -> new PaymentQueryService((io.vertx.blueprint.microservice.payment.PaymentQueryService) obj),
+    obj -> new PaymentQueryService((pl.dmcs.payment.PaymentQueryService) obj),
     PaymentQueryService::getDelegate
   );
 
-  private final io.vertx.blueprint.microservice.payment.PaymentQueryService delegate;
+  private final pl.dmcs.payment.PaymentQueryService delegate;
   
-  public PaymentQueryService(io.vertx.blueprint.microservice.payment.PaymentQueryService delegate) {
+  public PaymentQueryService(pl.dmcs.payment.PaymentQueryService delegate) {
     this.delegate = delegate;
   }
 
-  public io.vertx.blueprint.microservice.payment.PaymentQueryService getDelegate() {
+  public pl.dmcs.payment.PaymentQueryService getDelegate() {
     return delegate;
   }
 
@@ -110,7 +108,7 @@ public class PaymentQueryService {
   }
 
 
-  public static PaymentQueryService newInstance(io.vertx.blueprint.microservice.payment.PaymentQueryService arg) {
+  public static PaymentQueryService newInstance(pl.dmcs.payment.PaymentQueryService arg) {
     return arg != null ? new PaymentQueryService(arg) : null;
   }
 }

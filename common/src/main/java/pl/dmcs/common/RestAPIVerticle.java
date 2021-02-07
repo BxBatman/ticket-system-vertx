@@ -30,49 +30,8 @@ public abstract class RestAPIVerticle extends BaseMicroserviceVerticle {
     return httpServerFuture.map(r -> null);
   }
 
-  protected void enableCorsSupport(Router router) {
-    Set<String> allowHeaders = new HashSet<>();
-    allowHeaders.add("x-requested-with");
-    allowHeaders.add("Access-Control-Allow-Origin");
-    allowHeaders.add("origin");
-    allowHeaders.add("Content-Type");
-    allowHeaders.add("accept");
-    Set<HttpMethod> allowMethods = new HashSet<>();
-    allowMethods.add(HttpMethod.GET);
-    allowMethods.add(HttpMethod.PUT);
-    allowMethods.add(HttpMethod.OPTIONS);
-    allowMethods.add(HttpMethod.POST);
-    allowMethods.add(HttpMethod.DELETE);
-    allowMethods.add(HttpMethod.PATCH);
 
-    router.route().handler(CorsHandler.create("*")
-      .allowedHeaders(allowHeaders)
-      .allowedMethods(allowMethods));
-  }
 
-  protected void enableLocalSession(Router router) {
-    router.route().handler(CookieHandler.create());
-    router.route().handler(SessionHandler.create(
-      LocalSessionStore.create(vertx, "shopping.user.session")));
-  }
-
-  protected void enableClusteredSession(Router router) {
-    router.route().handler(CookieHandler.create());
-    router.route().handler(SessionHandler.create(
-      ClusteredSessionStore.create(vertx, "shopping.user.session")));
-  }
-
-  protected void requireLogin(RoutingContext context, BiConsumer<RoutingContext, JsonObject> biHandler) {
-    Optional<JsonObject> principal = Optional.ofNullable(context.request().getHeader("user-principal"))
-      .map(JsonObject::new);
-    if (principal.isPresent()) {
-      biHandler.accept(context, principal.get());
-    } else {
-      context.response()
-        .setStatusCode(401)
-        .end(new JsonObject().put("message", "need_auth").encode());
-    }
-  }
 
   protected <T> Handler<AsyncResult<T>> resultHandler(RoutingContext context, Handler<T> handler) {
     return res -> {
