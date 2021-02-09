@@ -1,6 +1,6 @@
 package pl.dmcs.order.impl;
 
-import pl.dmcs.common.service.JdbcRepositoryWrapper;
+import pl.dmcs.common.service.PostgresRepository;
 import pl.dmcs.order.Order;
 import pl.dmcs.order.OrderService;
 import io.vertx.core.AsyncResult;
@@ -10,7 +10,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import pl.dmcs.order.dto.OrderDto;
 
-public class OrderServiceImpl extends JdbcRepositoryWrapper implements OrderService {
+public class OrderServiceImpl extends PostgresRepository implements OrderService {
 
 
 
@@ -21,7 +21,7 @@ public class OrderServiceImpl extends JdbcRepositoryWrapper implements OrderServ
 
   @Override
   public OrderService initializePersistence(Handler<AsyncResult<Void>> resultHandler) {
-    client.getConnection(connHandler(resultHandler, connection -> {
+    client.getConnection(connectionHandler(resultHandler, connection -> {
       connection.execute(CREATE_STATEMENT, r -> {
         resultHandler.handle(r);
         connection.close();
@@ -36,7 +36,7 @@ public class OrderServiceImpl extends JdbcRepositoryWrapper implements OrderServ
             .add(order.getPersonIdentificationNumber())
             .add(new JsonArray(order.getTicketNumbers()).encode());
 
-    executeNoResult(params, INSERT_STATEMENT, resultHandler);
+    executeWithoutResult(params, INSERT_STATEMENT, resultHandler);
 
     return this;
   }
@@ -45,7 +45,7 @@ public class OrderServiceImpl extends JdbcRepositoryWrapper implements OrderServ
   public OrderService deleteOrder(Integer id, Handler<AsyncResult<Void>> resultHandler) {
     JsonArray params = new JsonArray()
             .add(id);
-    executeNoResult(params,DELETE_STATEMENT,resultHandler);
+    executeWithoutResult(params,DELETE_STATEMENT,resultHandler);
     return this;
   }
 
@@ -56,7 +56,7 @@ public class OrderServiceImpl extends JdbcRepositoryWrapper implements OrderServ
 
   @Override
   public OrderService getOrder(Integer id, Handler<AsyncResult<Order>> resultHandler) {
-    this.retrieveOne(id, GET_STATEMENT)
+    this.getOne(id, GET_STATEMENT)
             .map(option -> option.map(Order::new).orElse(null))
             .setHandler(resultHandler);
 

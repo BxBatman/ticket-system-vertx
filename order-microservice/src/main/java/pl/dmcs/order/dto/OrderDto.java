@@ -3,8 +3,6 @@ package pl.dmcs.order.dto;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
-import java.util.List;
-
 @DataObject(generateConverter = true)
 public class OrderDto {
     private TicketDto ticketDto;

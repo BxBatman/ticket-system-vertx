@@ -22,11 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public abstract class BaseMicroserviceVerticle extends AbstractVerticle {
-
-  private static final String LOG_EVENT_ADDRESS = "events.log";
-
-  private static final Logger logger = LoggerFactory.getLogger(BaseMicroserviceVerticle.class);
+public abstract class ServiceVerticle extends AbstractVerticle {
 
   protected ServiceDiscovery discovery;
   protected CircuitBreaker circuitBreaker;
@@ -60,15 +56,6 @@ public abstract class BaseMicroserviceVerticle extends AbstractVerticle {
     return publish(record);
   }
 
-  protected Future<Void> publishMessageSource(String name, String address) {
-    Record record = MessageSource.createRecord(name, address);
-    return publish(record);
-  }
-
-  protected Future<Void> publishJDBCDataSource(String name, JsonObject location) {
-    Record record = JDBCDataSource.createRecord(name, location, new JsonObject());
-    return publish(record);
-  }
 
   protected Future<Void> publishEventBusService(String name, String address, Class serviceClass) {
     Record record = EventBusService.createRecord(name, address, serviceClass);
@@ -88,7 +75,6 @@ public abstract class BaseMicroserviceVerticle extends AbstractVerticle {
     discovery.publish(record, ar -> {
       if (ar.succeeded()) {
         registeredRecords.add(record);
-        logger.info("Service <" + ar.result().getName() + "> published");
         future.complete();
       } else {
         future.fail(ar.cause());
@@ -98,22 +84,9 @@ public abstract class BaseMicroserviceVerticle extends AbstractVerticle {
     return future;
   }
 
-  protected void publishLogEvent(String type, JsonObject data) {
-    JsonObject msg = new JsonObject().put("type", type)
-      .put("message", data);
-    vertx.eventBus().publish(LOG_EVENT_ADDRESS, msg);
-  }
-
-  protected void publishLogEvent(String type, JsonObject data, boolean succeeded) {
-    JsonObject msg = new JsonObject().put("type", type)
-      .put("status", succeeded)
-      .put("message", data);
-    vertx.eventBus().publish(LOG_EVENT_ADDRESS, msg);
-  }
 
   @Override
   public void stop(Future<Void> future) throws Exception {
-    // In current design, the publisher is responsible for removing the service
     List<Future> futures = new ArrayList<>();
     registeredRecords.forEach(record -> {
       Future<Void> cleanupFuture = Future.future();

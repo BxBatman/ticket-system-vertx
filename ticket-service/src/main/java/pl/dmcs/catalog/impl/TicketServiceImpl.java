@@ -2,7 +2,7 @@ package pl.dmcs.catalog.impl;
 
 import io.vertx.core.*;
 import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
-import pl.dmcs.common.service.JdbcRepositoryWrapper;
+import pl.dmcs.common.service.PostgresRepository;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -14,21 +14,18 @@ import pl.dmcs.catalog.dto.TicketDto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
-public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements TicketService {
+public class TicketServiceImpl extends PostgresRepository implements TicketService {
 
-  private static final Logger logger = LoggerFactory.getLogger(JdbcTicketServiceImpl.class);
 
-  public JdbcTicketServiceImpl(Vertx vertx, JsonObject config) {
+  public TicketServiceImpl(Vertx vertx, JsonObject config) {
     super(vertx, config);
   }
 
   @Override
   public TicketService initializePersistence(Handler<AsyncResult<Void>> resultHandler) {
-    client.getConnection(connHandler(resultHandler, connection -> {
+    client.getConnection(connectionHandler(resultHandler, connection -> {
       connection.execute(CREATE_STATEMENT, r -> {
         resultHandler.handle(r);
         connection.close();
@@ -44,13 +41,13 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
       .add(ticket.getDate())
       .add(ticket.getPrice())
       .add(ticket.isReserved());
-    this.executeNoResult(params, INSERT_STATEMENT, resultHandler);
+    this.executeWithoutResult(params, INSERT_STATEMENT, resultHandler);
     return this;
   }
 
   @Override
   public TicketService get(Integer id, Handler<AsyncResult<Ticket>> resultHandler) {
-    this.retrieveOne(id, FETCH_STATEMENT)
+    this.getOne(id, FETCH_STATEMENT)
       .map(option -> option.map(Ticket::new).orElse(null))
       .setHandler(resultHandler);
     return this;
@@ -67,7 +64,7 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
               .add(ticketDto.getDate())
               .add(ticketDto.getPrice())
               .add(false);
-      this.executeNoResult(params, INSERT_STATEMENT, resultHandler);
+      this.executeWithoutResult(params, INSERT_STATEMENT, resultHandler);
     }
 
     return this;
@@ -75,7 +72,7 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
 
   @Override
   public TicketService checkAvailability(String title, Integer quantity, Handler<AsyncResult<Boolean>> resultHandler) {
-    this.retrieveAll(FETCH_ALL_STATEMENT)
+    this.getAll(FETCH_ALL_STATEMENT)
             .map(rawList -> rawList.stream()
                     .map(Ticket::new).count() >= quantity
             )
@@ -85,7 +82,7 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
 
   @Override
   public TicketService getAll(Handler<AsyncResult<List<Ticket>>> resultHandler) {
-    this.retrieveAll(FETCH_ALL_STATEMENT)
+    this.getAll(FETCH_ALL_STATEMENT)
             .map(rawList -> rawList.stream()
                     .map(Ticket::new)
                     .collect(Collectors.toList())
@@ -104,7 +101,7 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
     List<Integer> ticketIds = new ArrayList<>();
     List<Ticket> tickets = new ArrayList<>();
 
-    retrieveMany(params, FETCH_BY_TITLE_STATEMENT)
+    getMany(params, FETCH_BY_TITLE_STATEMENT)
             .map(rawList -> rawList.stream()
                     .map(Ticket::new)
                     .collect(Collectors.toList())
@@ -119,7 +116,7 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
             JsonArray parameters = new JsonArray()
                     .add(true)
                     .add(ticket.getId());
-            executeNoResult(parameters, UPDATE_STATEMENT,r->{});
+            executeWithoutResult(parameters, UPDATE_STATEMENT, r->{});
             ticketIds.add(ticket.getId());
             i++;
           }
@@ -165,7 +162,7 @@ public class JdbcTicketServiceImpl extends JdbcRepositoryWrapper implements Tick
 
 
   private void getTicket(int id,Handler<AsyncResult<Ticket>> resultHandler) {
-    retrieveOne(id, FETCH_BY_ID_STATEMENT)
+    getOne(id, FETCH_BY_ID_STATEMENT)
             .map(option -> option.map(Ticket::new).orElse(null))
             .setHandler(ar ->{
               if (ar.succeeded()) {

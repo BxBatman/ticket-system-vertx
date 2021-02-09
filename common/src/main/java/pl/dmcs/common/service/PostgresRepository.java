@@ -6,25 +6,22 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.SQLConnection;
 
 import java.util.List;
 import java.util.Optional;
 
-public class JdbcRepositoryWrapper {
+public class PostgresRepository {
 
   protected final JDBCClient client;
-  private static final Logger logger = LoggerFactory.getLogger(JdbcRepositoryWrapper.class);
-  public JdbcRepositoryWrapper(Vertx vertx, JsonObject config) {
-    logger.error(config.toString());
+
+  public PostgresRepository(Vertx vertx, JsonObject config) {
     this.client = JDBCClient.createNonShared(vertx, config);
   }
 
-  protected void executeNoResult(JsonArray params, String sql, Handler<AsyncResult<Void>> resultHandler) {
-    client.getConnection(connHandler(resultHandler, connection -> {
+  protected void executeWithoutResult(JsonArray params, String sql, Handler<AsyncResult<Void>> resultHandler) {
+    client.getConnection(connectionHandler(resultHandler, connection -> {
       connection.updateWithParams(sql, params, r -> {
         if (r.succeeded()) {
           resultHandler.handle(Future.succeededFuture());
@@ -37,7 +34,7 @@ public class JdbcRepositoryWrapper {
   }
 
   protected <R> void execute(JsonArray params, String sql, R ret, Handler<AsyncResult<R>> resultHandler) {
-    client.getConnection(connHandler(resultHandler, connection -> {
+    client.getConnection(connectionHandler(resultHandler, connection -> {
       connection.updateWithParams(sql, params, r -> {
         if (r.succeeded()) {
           resultHandler.handle(Future.succeededFuture(ret));
@@ -49,7 +46,7 @@ public class JdbcRepositoryWrapper {
     }));
   }
 
-  protected <K> Future<Optional<JsonObject>> retrieveOne(K param, String sql) {
+  protected <K> Future<Optional<JsonObject>> getOne(K param, String sql) {
     return getConnection()
       .compose(connection -> {
         Future<Optional<JsonObject>> future = Future.future();
@@ -70,29 +67,7 @@ public class JdbcRepositoryWrapper {
       });
   }
 
-  protected int calcPage(int page, int limit) {
-    if (page <= 0)
-      return 0;
-    return limit * (page - 1);
-  }
-
-  protected Future<List<JsonObject>> retrieveByPage(int page, int limit, String sql) {
-    JsonArray params = new JsonArray().add(calcPage(page, limit)).add(limit);
-    return getConnection().compose(connection -> {
-      Future<List<JsonObject>> future = Future.future();
-      connection.queryWithParams(sql, params, r -> {
-        if (r.succeeded()) {
-          future.complete(r.result().getRows());
-        } else {
-          future.fail(r.cause());
-        }
-        connection.close();
-      });
-      return future;
-    });
-  }
-
-  protected Future<List<JsonObject>> retrieveMany(JsonArray param, String sql) {
+  protected Future<List<JsonObject>> getMany(JsonArray param, String sql) {
     return getConnection().compose(connection -> {
       Future<List<JsonObject>> future = Future.future();
       connection.queryWithParams(sql, param, r -> {
@@ -107,7 +82,7 @@ public class JdbcRepositoryWrapper {
     });
   }
 
-  protected Future<List<JsonObject>> retrieveAll(String sql) {
+  protected Future<List<JsonObject>> getAll(String sql) {
     return getConnection().compose(connection -> {
       Future<List<JsonObject>> future = Future.future();
       connection.query(sql, r -> {
@@ -122,8 +97,8 @@ public class JdbcRepositoryWrapper {
     });
   }
 
-  protected <K> void removeOne(K id, String sql, Handler<AsyncResult<Void>> resultHandler) {
-    client.getConnection(connHandler(resultHandler, connection -> {
+  protected <K> void deleteOne(K id, String sql, Handler<AsyncResult<Void>> resultHandler) {
+    client.getConnection(connectionHandler(resultHandler, connection -> {
       JsonArray params = new JsonArray().add(id);
       connection.updateWithParams(sql, params, r -> {
         if (r.succeeded()) {
@@ -136,8 +111,8 @@ public class JdbcRepositoryWrapper {
     }));
   }
 
-  protected void removeAll(String sql, Handler<AsyncResult<Void>> resultHandler) {
-    client.getConnection(connHandler(resultHandler, connection -> {
+  protected void deleteAll(String sql, Handler<AsyncResult<Void>> resultHandler) {
+    client.getConnection(connectionHandler(resultHandler, connection -> {
       connection.update(sql, r -> {
         if (r.succeeded()) {
           resultHandler.handle(Future.succeededFuture());
@@ -149,7 +124,7 @@ public class JdbcRepositoryWrapper {
     }));
   }
 
-  protected <R> Handler<AsyncResult<SQLConnection>> connHandler(Handler<AsyncResult<R>> h1, Handler<SQLConnection> h2) {
+  protected <R> Handler<AsyncResult<SQLConnection>> connectionHandler(Handler<AsyncResult<R>> h1, Handler<SQLConnection> h2) {
     return conn -> {
       if (conn.succeeded()) {
         final SQLConnection connection = conn.result();

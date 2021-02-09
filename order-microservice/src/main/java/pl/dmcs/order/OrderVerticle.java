@@ -1,6 +1,6 @@
 package pl.dmcs.order;
 
-import pl.dmcs.common.BaseMicroserviceVerticle;
+import pl.dmcs.common.ServiceVerticle;
 import pl.dmcs.order.api.RestOrderAPIVerticle;
 import pl.dmcs.order.impl.OrderServiceImpl;
 import io.vertx.core.DeploymentOptions;
@@ -9,7 +9,7 @@ import io.vertx.serviceproxy.ProxyHelper;
 
 import static pl.dmcs.order.OrderService.*;
 
-public class OrderVerticle extends BaseMicroserviceVerticle {
+public class OrderVerticle extends ServiceVerticle {
 
   private OrderService orderService;
 

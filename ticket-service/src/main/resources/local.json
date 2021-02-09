@@ -1,5 +1,5 @@
 {
-  "ticket.http.address": "0.0.0.0",
+  "ticket.http.address": "localhost",
   "ticket.http.port": 8081,
   "api.name": "ticket",
   "url": "jdbc:postgresql://localhost:5432/catalogdbvertx",

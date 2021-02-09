@@ -3,24 +3,14 @@ package pl.dmcs.common;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.CorsHandler;
-import io.vertx.ext.web.handler.SessionHandler;
-import io.vertx.ext.web.sstore.ClusteredSessionStore;
-import io.vertx.ext.web.sstore.LocalSessionStore;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public abstract class RestAPIVerticle extends BaseMicroserviceVerticle {
+public abstract class RestAPIVerticle extends ServiceVerticle {
 
   protected Future<Void> createHttpServer(Router router, String host, int port) {
     Future<HttpServer> httpServerFuture = Future.future();
@@ -76,7 +66,7 @@ public abstract class RestAPIVerticle extends BaseMicroserviceVerticle {
     };
   }
 
-  protected <T> Handler<AsyncResult<T>> resultHandlerNonEmpty(RoutingContext context) {
+  protected <T> Handler<AsyncResult<T>> resultHandlerWithResponse(RoutingContext context) {
     return ar -> {
       if (ar.succeeded()) {
         T res = ar.result();
@@ -107,11 +97,11 @@ public abstract class RestAPIVerticle extends BaseMicroserviceVerticle {
     };
   }
 
-  protected Handler<AsyncResult<Void>> resultVoidHandler(RoutingContext context, JsonObject result) {
-    return resultVoidHandler(context, result, 200);
+  protected Handler<AsyncResult<Void>> resultHandlerWithoutResponse(RoutingContext context, JsonObject result) {
+    return resultHandlerWithoutResponse(context, result, 200);
   }
 
-  protected Handler<AsyncResult<Void>> resultVoidHandler(RoutingContext context, JsonObject result, int status) {
+  protected Handler<AsyncResult<Void>> resultHandlerWithoutResponse(RoutingContext context, JsonObject result, int status) {
     return ar -> {
       if (ar.succeeded()) {
         context.response()
@@ -125,7 +115,7 @@ public abstract class RestAPIVerticle extends BaseMicroserviceVerticle {
     };
   }
 
-  protected Handler<AsyncResult<Void>> resultVoidHandler(RoutingContext context, int status) {
+  protected Handler<AsyncResult<Void>> resultHandlerWithoutResponse(RoutingContext context, int status) {
     return ar -> {
       if (ar.succeeded()) {
         context.response()
@@ -151,8 +141,6 @@ public abstract class RestAPIVerticle extends BaseMicroserviceVerticle {
       }
     };
   }
-
-  // helper method dealing with failure
 
   protected void badRequest(RoutingContext context, Throwable ex) {
     context.response().setStatusCode(400)

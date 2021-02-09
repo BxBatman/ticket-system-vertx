@@ -52,37 +52,37 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
 
   private void apiAddTicket(RoutingContext context) {
     Ticket ticket = new Ticket(context.getBodyAsJson());
-    ticketService.save(ticket, resultVoidHandler(context, 201));
+    ticketService.save(ticket, resultHandlerWithoutResponse(context, 201));
   }
 
   private void apiMultipleAdd(RoutingContext context) {
     TicketDto ticketDto = new TicketDto(context.getBodyAsJson());
-    ticketService.saveMultiplesSameTickets(ticketDto,resultVoidHandler(context,201));
+    ticketService.saveMultiplesSameTickets(ticketDto, resultHandlerWithoutResponse(context,201));
   }
 
   private void apiGetTicket(RoutingContext context) {
     Integer id = Integer.valueOf(context.request().getParam("id"));
-    ticketService.get(id, resultHandlerNonEmpty(context));
+    ticketService.get(id, resultHandlerWithResponse(context));
   }
 
   private void apiAvailabilityCheck(RoutingContext context) {
     String title = context.request().getParam("title");
     Integer quantity = Integer.valueOf(context.request().getParam("quantity"));
-    ticketService.checkAvailability(title,quantity,resultHandlerNonEmpty(context));
+    ticketService.checkAvailability(title,quantity, resultHandlerWithResponse(context));
   }
 
   private void apiGetAll(RoutingContext context) {
-    ticketService.getAll(resultHandlerNonEmpty(context));
+    ticketService.getAll(resultHandlerWithResponse(context));
   }
 
   private void apiCheckAndReserveTickets(RoutingContext context) {
     ReservationTicketDto reservationTicketDto = new ReservationTicketDto(context.getBodyAsJson());
-    ticketService.reserveTickets(reservationTicketDto,resultHandlerNonEmpty(context));
+    ticketService.reserveTickets(reservationTicketDto, resultHandlerWithResponse(context));
   }
 
   private void apiGetSpecificTickets(RoutingContext context) {
     ReservationTicketDtoResult reservationTicketDtoResult = new ReservationTicketDtoResult(context.getBodyAsJson());
-    ticketService.getSpecificTickets(reservationTicketDtoResult.getTicketNumbers(),resultHandlerNonEmpty(context));
+    ticketService.getSpecificTickets(reservationTicketDtoResult.getTicketNumbers(), resultHandlerWithResponse(context));
   }
 
 }

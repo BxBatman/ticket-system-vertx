@@ -7,8 +7,6 @@ import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import pl.dmcs.common.RestAPIVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -20,14 +18,14 @@ import pl.dmcs.order.dto.TicketDto;
 
 public class RestOrderAPIVerticle extends RestAPIVerticle {
 
-  private static final Logger logger = LoggerFactory.getLogger(RestOrderAPIVerticle.class);
-
   private static final String SERVICE_NAME = "order-rest-api";
+
+  private static final int TICKET_PORT = 8081;
+  private static final String HOST = "localhost";
 
   private static final String API_GET = "/order/:id";
   private static final String MAKE_ORDER = "/order/make";
-//  private static final String API_SAVE = "/order";
-  private static final String API_GET_TICKET="/order/ticket/:id";
+  private static final String API_SAVE = "/order";
 
   private final OrderService service;
 
@@ -42,26 +40,27 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
 
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
-    router.get(API_GET).handler(this::apiGetOrder);
+    router.get(API_GET).handler(this::getOrder);
+    router.post(API_SAVE).handler(this::saveOrder);
     router.post(MAKE_ORDER).handler(this::makeOrder);
 
-    String host = config().getString("order.http.address", "0.0.0.0");
-    int port = config().getInteger("order.http.port", 8090);
+    String host = "localhost";
+    int port =  8090;
 
     createHttpServer(router, host, port)
       .compose(serverCreated -> publishHttpEndpoint(SERVICE_NAME, host, port))
       .setHandler(future.completer());
   }
 
-  private void apiGetOrder(RoutingContext context) {
+  private void getOrder(RoutingContext context) {
     Integer id = Integer.valueOf(context.request().getParam("id"));
-    service.getOrder(id,resultHandlerNonEmpty(context));
+    service.getOrder(id, resultHandlerWithResponse(context));
   }
 
 
-  private void apiSaveOrder(RoutingContext context) {
+  private void saveOrder(RoutingContext context) {
     Order order = new Order(context.getBodyAsJson());
-    service.save(order,resultVoidHandler(context,201));
+    service.save(order, resultHandlerWithoutResponse(context,201));
   }
 
   private void makeOrder(RoutingContext routingContext) {
@@ -70,10 +69,10 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
     TicketDto ticketDto = orderDto.getTicketDto();
 
       WebClient client = WebClient.create(vertx);
-      client.get(8081, "localhost", "/ticket/availability/" + ticketDto.getTitle() + "/" + ticketDto.getQuantity())
+      client.get(TICKET_PORT, HOST, "/ticket/availability/" + ticketDto.getTitle() + "/" + ticketDto.getQuantity())
               .send(ar -> {
                 if (ar.succeeded() && ar.result().bodyAsString().equals("true")) {
-                      client.post(8081,"localhost","/ticket/reserve").sendJsonObject(
+                      client.post(TICKET_PORT,HOST,"/ticket/reserve").sendJsonObject(
                               new JsonObject()
                               .put("title",ticketDto.getTitle())
                               .put("quantity",ticketDto.getQuantity()),res ->{
@@ -82,7 +81,7 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
                                   Order order = new Order();
                                   order.setTicketNumbers(reservationTicketDtoResult.getTicketNumbers());
                                   order.setPersonIdentificationNumber(orderDto.getPersonIdentificationNumber());
-                                  service.save(order,resultVoidHandler(routingContext,201));
+                                  service.save(order, resultHandlerWithoutResponse(routingContext,201));
                                 } else {
                                   ar.cause().printStackTrace();
                                 }
