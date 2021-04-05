@@ -57,7 +57,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
 
   private void apiMultipleAdd(RoutingContext context) {
     TicketDto ticketDto = new TicketDto(context.getBodyAsJson());
-    ticketService.saveMultiplesSameTickets(ticketDto, resultHandlerWithoutResponse(context,201));
+    ticketService.saveMultiplesSameTickets(ticketDto, resultHandlerWithResponse(context));
   }
 
   private void apiGetTicket(RoutingContext context) {

@@ -4,7 +4,7 @@
   "api.name": "order",
   "url": "jdbc:postgresql://localhost:5432/orderdbvertx",
   "user": "postgres",
-  "password": "postgres",
+  "password": "1234",
   "driver-class-name": "org.postgresql.Driver",
   "max_pool_size": 30
 }

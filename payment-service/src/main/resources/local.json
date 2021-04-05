@@ -1,0 +1,5 @@
+{
+  "payment.http.address": "0.0.0.0",
+  "payment.http.port": 8083,
+  "api.name": "payment"
+}

@@ -16,7 +16,7 @@ public class APIGatewayVerticle extends RestAPIVerticle {
 
     private static final int DEFAULT_PORT = 8787;
     private static final int TICKET_PORT = 8081;
-    private static final int ORDER_PORT = 8089;
+    private static final int ORDER_PORT = 8090;
 
 
     private static final Logger logger = LoggerFactory.getLogger(APIGatewayVerticle.class);

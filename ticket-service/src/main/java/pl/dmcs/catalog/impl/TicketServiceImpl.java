@@ -64,8 +64,10 @@ public class TicketServiceImpl extends PostgresRepository implements TicketServi
               .add(ticketDto.getDate())
               .add(ticketDto.getPrice())
               .add(false);
-      this.executeWithoutResult(params, INSERT_STATEMENT, resultHandler);
+      this.executeWithoutResult(params, INSERT_STATEMENT, r->{});
     }
+
+    resultHandler.handle(Future.succeededFuture());
 
     return this;
   }
