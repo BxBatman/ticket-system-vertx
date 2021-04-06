@@ -12,8 +12,8 @@
   <modules>
     <module>common</module>
     <module>ticket-service</module>
-    <module>payment-microservice</module>
-    <module>order-microservice</module>
+    <module>payment-service</module>
+    <module>order-service</module>
     <module>gateway</module>
   </modules>
 

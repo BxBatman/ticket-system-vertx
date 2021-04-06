@@ -28,7 +28,7 @@ public class StripeCharge {
         params.put("source", this.source);
         params.put(
                 "description",
-                "Order number:" + orderId + " Person ID:" + personIdentificationNumber
+                "Vertx Person ID:" + personIdentificationNumber
         );
         params.put("receipt_email",this.receiptEmail);
         return params;
