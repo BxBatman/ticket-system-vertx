@@ -84,37 +84,6 @@ public abstract class RestAPIVerticle extends ServiceVerticle {
     };
   }
 
-  protected <T> Handler<AsyncResult<T>> rawResultHandler(RoutingContext context) {
-    return ar -> {
-      if (ar.succeeded()) {
-        T res = ar.result();
-        context.response()
-          .end(res == null ? "" : res.toString());
-      } else {
-        internalError(context, ar.cause());
-        ar.cause().printStackTrace();
-      }
-    };
-  }
-
-  protected Handler<AsyncResult<Void>> resultHandlerWithoutResponse(RoutingContext context, JsonObject result) {
-    return resultHandlerWithoutResponse(context, result, 200);
-  }
-
-  protected Handler<AsyncResult<Void>> resultHandlerWithoutResponse(RoutingContext context, JsonObject result, int status) {
-    return ar -> {
-      if (ar.succeeded()) {
-        context.response()
-          .setStatusCode(status == 0 ? 200 : status)
-          .putHeader("content-type", "application/json")
-          .end(result.encodePrettily());
-      } else {
-        internalError(context, ar.cause());
-        ar.cause().printStackTrace();
-      }
-    };
-  }
-
   protected Handler<AsyncResult<Void>> resultHandlerWithoutResponse(RoutingContext context, int status) {
     return ar -> {
       if (ar.succeeded()) {
@@ -129,24 +98,6 @@ public abstract class RestAPIVerticle extends ServiceVerticle {
     };
   }
 
-  protected Handler<AsyncResult<Void>> deleteResultHandler(RoutingContext context) {
-    return res -> {
-      if (res.succeeded()) {
-        context.response().setStatusCode(204)
-          .putHeader("content-type", "application/json")
-          .end(new JsonObject().put("message", "delete_success").encodePrettily());
-      } else {
-        internalError(context, res.cause());
-        res.cause().printStackTrace();
-      }
-    };
-  }
-
-  protected void badRequest(RoutingContext context, Throwable ex) {
-    context.response().setStatusCode(400)
-      .putHeader("content-type", "application/json")
-      .end(new JsonObject().put("error", ex.getMessage()).encodePrettily());
-  }
 
   protected void notFound(RoutingContext context) {
     context.response().setStatusCode(404)
@@ -156,32 +107,6 @@ public abstract class RestAPIVerticle extends ServiceVerticle {
 
   protected void internalError(RoutingContext context, Throwable ex) {
     context.response().setStatusCode(500)
-      .putHeader("content-type", "application/json")
-      .end(new JsonObject().put("error", ex.getMessage()).encodePrettily());
-  }
-
-  protected void notImplemented(RoutingContext context) {
-    context.response().setStatusCode(501)
-      .putHeader("content-type", "application/json")
-      .end(new JsonObject().put("message", "not_implemented").encodePrettily());
-  }
-
-  protected void badGateway(Throwable ex, RoutingContext context) {
-    ex.printStackTrace();
-    context.response()
-      .setStatusCode(502)
-      .putHeader("content-type", "application/json")
-      .end(new JsonObject().put("error", "bad_gateway")
-        //.put("message", ex.getMessage())
-        .encodePrettily());
-  }
-
-  protected void serviceUnavailable(RoutingContext context) {
-    context.fail(503);
-  }
-
-  protected void serviceUnavailable(RoutingContext context, Throwable ex) {
-    context.response().setStatusCode(503)
       .putHeader("content-type", "application/json")
       .end(new JsonObject().put("error", ex.getMessage()).encodePrettily());
   }

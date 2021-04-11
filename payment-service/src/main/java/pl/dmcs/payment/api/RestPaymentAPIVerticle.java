@@ -49,7 +49,7 @@ public class RestPaymentAPIVerticle extends RestAPIVerticle {
         Stripe.apiKey = API_KEY;
         StripeCharge stripeCharge = new StripeCharge(1800L,"mail@test.com",order.getId(),order.getPersonIdentificationNumber());
         try {
-            Charge charge = Charge.create(stripeCharge.getCharge());
+            Charge.create(stripeCharge.getCharge());
             response.setStatusCode(200).end();
         } catch (StripeException e) {
             e.printStackTrace();

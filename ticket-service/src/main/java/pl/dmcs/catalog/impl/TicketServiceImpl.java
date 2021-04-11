@@ -1,16 +1,14 @@
 package pl.dmcs.catalog.impl;
 
 import io.vertx.core.*;
-import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
-import pl.dmcs.common.service.PostgresRepository;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import pl.dmcs.catalog.Ticket;
 import pl.dmcs.catalog.TicketService;
 import pl.dmcs.catalog.dto.ReservationTicketDto;
+import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
 import pl.dmcs.catalog.dto.TicketDto;
+import pl.dmcs.common.service.PostgresRepository;
 
 import java.util.ArrayList;
 import java.util.List;
