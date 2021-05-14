@@ -33,19 +33,6 @@ public class PostgresRepository {
     }));
   }
 
-  protected <R> void execute(JsonArray params, String sql, R ret, Handler<AsyncResult<R>> resultHandler) {
-    client.getConnection(connectionHandler(resultHandler, connection -> {
-      connection.updateWithParams(sql, params, r -> {
-        if (r.succeeded()) {
-          resultHandler.handle(Future.succeededFuture(ret));
-        } else {
-          resultHandler.handle(Future.failedFuture(r.cause()));
-        }
-        connection.close();
-      });
-    }));
-  }
-
   protected <K> Future<Optional<JsonObject>> getOne(K param, String sql) {
     return getConnection()
       .compose(connection -> {
@@ -97,19 +84,6 @@ public class PostgresRepository {
     });
   }
 
-  protected <K> void deleteOne(K id, String sql, Handler<AsyncResult<Void>> resultHandler) {
-    client.getConnection(connectionHandler(resultHandler, connection -> {
-      JsonArray params = new JsonArray().add(id);
-      connection.updateWithParams(sql, params, r -> {
-        if (r.succeeded()) {
-          resultHandler.handle(Future.succeededFuture());
-        } else {
-          resultHandler.handle(Future.failedFuture(r.cause()));
-        }
-        connection.close();
-      });
-    }));
-  }
 
   protected void deleteAll(String sql, Handler<AsyncResult<Void>> resultHandler) {
     client.getConnection(connectionHandler(resultHandler, connection -> {

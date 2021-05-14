@@ -176,13 +176,13 @@ public class TicketServiceImpl extends PostgresRepository implements TicketServi
 
 
 
-  private static final String CREATE_STATEMENT = "CREATE TABLE IF NOT EXISTS `tickets` (\n" +
-    "  `id` serial NOT NULL,\n" +
-    "  `title` character varying(255) NOT NULL,\n" +
-    "  `date` character varying(255) NOT NULL,\n" +
-    "  `price` character varying(255) NOT NULL,\n" +
-    "  `reserved` boolean NOT NULL,\n" +
-    "  CONSTRAINT `tickets_pkey` PRIMARY KEY ('id') )";
+  private static final String CREATE_STATEMENT = "CREATE TABLE IF NOT EXISTS tickets (\n" +
+    "  id serial NOT NULL,\n" +
+    "  title character varying(255) NOT NULL,\n" +
+    "  date character varying(255) NOT NULL,\n" +
+    "  price character varying(255) NOT NULL,\n" +
+    "  reserved boolean NOT NULL,\n" +
+    "  CONSTRAINT tickets_pkey PRIMARY KEY ('id') )";
   private static final String INSERT_STATEMENT = "INSERT INTO tickets (title, date, price, reserved) VALUES (?, ?, ?, ?)";
   private static final String FETCH_STATEMENT = "SELECT * FROM tickets WHERE id = ?";
   private static final String FETCH_BY_TITLE_STATEMENT = "SELECT * FROM tickets WHERE title = ?";

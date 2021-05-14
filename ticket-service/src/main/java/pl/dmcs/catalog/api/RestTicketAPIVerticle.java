@@ -1,5 +1,7 @@
 package pl.dmcs.catalog.api;
 
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import pl.dmcs.catalog.Ticket;
 import pl.dmcs.catalog.TicketService;
 import pl.dmcs.catalog.dto.ReservationTicketDtoResult;
@@ -14,6 +16,8 @@ import pl.dmcs.catalog.dto.TicketDto;
 public class RestTicketAPIVerticle extends RestAPIVerticle {
 
   private static final String SERVICE_NAME = "ticket-rest-api";
+
+  private static final Logger logger = LoggerFactory.getLogger(RestTicketAPIVerticle.class);
 
   private final TicketService ticketService;
 
@@ -31,6 +35,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
 
   @Override
   public void start(Future<Void> future) throws Exception {
+    long startTime = System.nanoTime();
     super.start();
     final Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
@@ -48,6 +53,9 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
     createHttpServer(router, host, port)
       .compose(serverCreated -> publishHttpEndpoint(SERVICE_NAME, host, port))
       .setHandler(future.completer());
+    long endTime = System.nanoTime();
+    long duration = (endTime - startTime);
+    logger.info("Startup time " + (double)duration/1000000000);
   }
 
   private void apiAddTicket(RoutingContext context) {

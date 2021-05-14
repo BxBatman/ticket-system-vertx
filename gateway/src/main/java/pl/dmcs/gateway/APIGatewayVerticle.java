@@ -23,6 +23,7 @@ public class APIGatewayVerticle extends RestAPIVerticle {
 
     @Override
     public void start(Future<Void> future) throws Exception {
+        long startTime = System.nanoTime();
         super.start();
 
         String host = "localhost";
@@ -41,7 +42,10 @@ public class APIGatewayVerticle extends RestAPIVerticle {
                     if (ar.succeeded()) {
                         publishApiGateway(host, port);
                         future.complete();
+                        long endTime = System.nanoTime();
+                        long duration = (endTime - startTime);
                         logger.info("API Gateway is running on port " + port);
+                        logger.info("Startup time " + (double)duration/1000000000);
                     } else {
                         future.fail(ar.cause());
                     }

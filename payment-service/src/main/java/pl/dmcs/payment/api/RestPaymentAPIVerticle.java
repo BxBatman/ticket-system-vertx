@@ -5,6 +5,8 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -22,11 +24,14 @@ public class RestPaymentAPIVerticle extends RestAPIVerticle {
 
     private static final String MAKE_PAYMENT = "/pay";
 
+    private static final Logger logger = LoggerFactory.getLogger(RestPaymentAPIVerticle.class);
+
     public RestPaymentAPIVerticle() {
     }
 
     @Override
     public void start(Future<Void> future) throws Exception {
+        long startTime = System.nanoTime();
         super.start();
 
 
@@ -40,6 +45,9 @@ public class RestPaymentAPIVerticle extends RestAPIVerticle {
         createHttpServer(router, host, port)
                 .compose(serverCreated -> publishHttpEndpoint(SERVICE_NAME, host, port))
                 .setHandler(future.completer());
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        logger.info("Startup time " + (double)duration/1000000000);
     }
 
     private void makePayment(RoutingContext routingContext) {

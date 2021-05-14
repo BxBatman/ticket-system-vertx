@@ -3,6 +3,8 @@ package pl.dmcs.order.api;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import pl.dmcs.common.RestAPIVerticle;
@@ -19,6 +21,8 @@ import pl.dmcs.order.dto.TicketDto;
 public class RestOrderAPIVerticle extends RestAPIVerticle {
 
   private static final String SERVICE_NAME = "order-rest-api";
+
+  private static final Logger logger = LoggerFactory.getLogger(RestOrderAPIVerticle.class);
 
   private static final int TICKET_PORT = 8081;
   private static final int PAYMENT_PORT = 8083;
@@ -37,6 +41,7 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
 
   @Override
   public void start(Future<Void> future) throws Exception {
+      long startTime = System.nanoTime();
     super.start();
 
 
@@ -53,6 +58,9 @@ public class RestOrderAPIVerticle extends RestAPIVerticle {
     createHttpServer(router, host, port)
       .compose(serverCreated -> publishHttpEndpoint(SERVICE_NAME, host, port))
       .setHandler(future.completer());
+      long endTime = System.nanoTime();
+      long duration = (endTime - startTime);
+      logger.info("Startup time " + (double)duration/1000000000);
   }
 
   private void getOrder(RoutingContext context) {
