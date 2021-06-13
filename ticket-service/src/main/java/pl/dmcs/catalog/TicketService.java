@@ -43,5 +43,6 @@ public interface TicketService {
   @Fluent
   TicketService getSpecificTickets(List<Integer> ticketIds,Handler<AsyncResult<List<Ticket>>> resultHandler);
 
-
+  @Fluent
+  TicketService deleteTicket(String title, Handler<AsyncResult<Void>> resultHandler);
 }

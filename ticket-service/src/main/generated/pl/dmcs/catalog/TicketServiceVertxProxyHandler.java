@@ -197,6 +197,10 @@ public class TicketServiceVertxProxyHandler extends ProxyHandler {
          });
           break;
         }
+        case "deleteTicket": {
+          service.deleteTicket((java.lang.String)json.getValue("title"), createHandler(msg));
+          break;
+        }
         default: {
           throw new IllegalStateException("Invalid action: " + action);
         }

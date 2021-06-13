@@ -173,6 +173,12 @@ public class TicketServiceImpl extends PostgresRepository implements TicketServi
             });
   }
 
+  @Override
+  public TicketService deleteTicket(String title, Handler<AsyncResult<Void>> resultHandler) {
+    this.deleteOne(title, DELETE_BY_TITLE_STATEMENT, resultHandler);
+    return this;
+  }
+
 
 
 
@@ -189,4 +195,5 @@ public class TicketServiceImpl extends PostgresRepository implements TicketServi
   private static final String FETCH_ALL_STATEMENT = "SELECT * FROM tickets";
   private static final String UPDATE_STATEMENT = "UPDATE tickets SET reserved = ? WHERE id = ?";
   private static final String FETCH_BY_ID_STATEMENT = "SELECT * FROM tickets WHERE id = ?";
+  private static final String DELETE_BY_TITLE_STATEMENT = "DELETE FROM tickets WHERE ctid IN ( SELECT ctid FROM tickets WHERE title = ? ORDER BY id LIMIT 1)";
 }

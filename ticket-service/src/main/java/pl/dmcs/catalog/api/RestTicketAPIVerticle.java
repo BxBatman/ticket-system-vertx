@@ -28,6 +28,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
   private static final String API_GET_ALL="/ticket/all/list";
   private static final String API_RESERVE="/ticket/reserve";
   private static final String API_GET_SPECIFIC_TICKETS="/ticket/specific/all";
+  private static final String API_DELETE_TICKET = "/ticket/delete/:title";
 
   public RestTicketAPIVerticle(TicketService ticketService) {
     this.ticketService = ticketService;
@@ -46,6 +47,7 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
     router.get(API_GET_ALL).handler(this::apiGetAll);
     router.post(API_RESERVE).handler(this::apiCheckAndReserveTickets);
     router.post(API_GET_SPECIFIC_TICKETS).handler(this::apiGetSpecificTickets);
+    router.delete(API_DELETE_TICKET).handler(this::apiDeleteTicket);
 
     String host = config().getString("ticket.http.address", "localhost");
     int port = config().getInteger("ticket.http.port", 8081);
@@ -91,6 +93,11 @@ public class RestTicketAPIVerticle extends RestAPIVerticle {
   private void apiGetSpecificTickets(RoutingContext context) {
     ReservationTicketDtoResult reservationTicketDtoResult = new ReservationTicketDtoResult(context.getBodyAsJson());
     ticketService.getSpecificTickets(reservationTicketDtoResult.getTicketNumbers(), resultHandlerWithResponse(context));
+  }
+
+  private void apiDeleteTicket(RoutingContext context) {
+    String title = context.request().getParam("title");
+    ticketService.deleteTicket(title,resultHandlerWithoutResponse(context, 200));
   }
 
 }

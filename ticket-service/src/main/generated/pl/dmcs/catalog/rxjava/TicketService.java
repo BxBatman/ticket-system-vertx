@@ -134,6 +134,17 @@ public class TicketService {
     }));
   }
 
+  public TicketService deleteTicket(String title, Handler<AsyncResult<Void>> resultHandler) { 
+    delegate.deleteTicket(title, resultHandler);
+    return this;
+  }
+
+  public Single<Void> rxDeleteTicket(String title) { 
+    return Single.create(new io.vertx.rx.java.SingleOnSubscribeAdapter<>(fut -> {
+      deleteTicket(title, fut);
+    }));
+  }
+
 
   public static TicketService newInstance(pl.dmcs.catalog.TicketService arg) {
     return arg != null ? new TicketService(arg) : null;
